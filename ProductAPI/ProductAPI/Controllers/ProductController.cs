@@ -46,7 +46,7 @@ namespace ProductAPI.Controllers
         public object Post(Product product)
         {
             conn.Connection.Open();
-            string sql = $"INSERT INTO `products`(`id`, `Name`, `Price`, `CreatedTime`) VALUES ('{product.Id}','{product.Name}','{product.Price}','{product.CreatedTime}')";
+            string sql = $"INSERT INTO `products`(`id`, `Name`, `Price`, `CreatedTime`) VALUES ('{product.Id}','{product.Name}','{product.Price}','{DateTime.Now.ToString("yyyy-mm-dd-HH-mm--ss"}')";
 
             MySqlCommand cmd = new MySqlCommand(sql,conn.Connection);
             cmd.ExecuteNonQuery();
