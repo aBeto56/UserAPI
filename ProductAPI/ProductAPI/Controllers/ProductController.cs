@@ -1,16 +1,15 @@
-﻿using Microsoft.AspNetCore.Http;
-using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Mvc;
 using MySql.Data.MySqlClient;
-using ProductAPI.Modell;
-using System.Security.Cryptography;
+using ProductApi.Model;
+using static ProductAPI.Dtos.Dto;
 
-namespace ProductAPI.Controllers
+namespace ProductApi.Controllers
 {
     [Route("product")]
     [ApiController]
     public class ProductController : ControllerBase
     {
-        public static Connect conn = new();
+        private Connect conn = new();
 
         [HttpGet]
         public List<Product> Get()
@@ -33,6 +32,7 @@ namespace ProductAPI.Controllers
                     Price = reader.GetInt32(2),
                     CreatedTime = reader.GetDateTime(3)
                 };
+
                 products.Add(result);
             }
             while (reader.Read());
@@ -43,16 +43,37 @@ namespace ProductAPI.Controllers
         }
 
         [HttpPost]
-        public object Post(Product product)
+        /*public object Post(Product product)
         {
             conn.Connection.Open();
-            string sql = $"INSERT INTO `products`(`id`, `Name`, `Price`, `CreatedTime`) VALUES ('{product.Id}','{product.Name}','{product.Price}','{DateTime.Now.ToString("yyyy-mm-dd-HH-mm--ss"}')";
 
-            MySqlCommand cmd = new MySqlCommand(sql,conn.Connection);
+
+            string sql = $"INSERT INTO `products`(`Id`, `Name`, `Price`, `CreatedTime`) VALUES ('{Guid.NewGuid()}','{product.Name}',{product.Price},'{DateTime.Now.ToString("yyyy-MM-dd hh:mm:ss")}')";
+
+            MySqlCommand cmd = new MySqlCommand(sql, conn.Connection);
             cmd.ExecuteNonQuery();
 
+
             conn.Connection.Close();
-            return new { message = "Új rekord felvéve" };
+
+            return new { message = "Új rekord felvéve!" };
+        }*/
+        public ActionResult<Product> Post(CreateProductDto product)
+        {
+            var result = new Product
+            {
+                Id = Guid.NewGuid(),
+                Name = product.name,
+                Price = product.Price,
+                CreatedTime=DateTime.Now,
+            };
+            string sql = $"INSERT INTO `products`(`id`, `Name`, `Price`, `CreatedTime`) VALUES ('{result.Id}','{result.Name}','{result.Price}','{result.CreatedTime}')";
+
+            conn.Connection.Open();
+            MySqlCommand cmd = new MySqlCommand( sql, conn.Connection);
+            cmd.ExecuteNonQuery();
+            conn.Connection.Close();
+            return StatusCode(201, result);
         }
     }
 }
