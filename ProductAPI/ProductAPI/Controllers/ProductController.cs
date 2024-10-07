@@ -75,5 +75,17 @@ namespace ProductApi.Controllers
             conn.Connection.Close();
             return StatusCode(201, result);
         }
+
+        [HttpPut]
+        public ActionResult<Product> Put(Guid id, UpdateProductDto product) {
+            string sql = $"UPDATE `products` SET `id`='{product.id}',`Name`='',`Price`='[{product.Price}]',`CreatedTime`='{product.CreatedTime}' WHERE 1";
+
+            conn.Connection.Open();
+            MySqlCommand cmd = new MySqlCommand(sql, conn.Connection);
+            cmd.ExecuteNonQuery();
+            conn.Connection.Close();
+
+                return Ok(new Product { Id=id,Name=product.name, Price=product.Price});
+        }
     }
 }
