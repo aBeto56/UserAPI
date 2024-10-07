@@ -87,5 +87,15 @@ namespace ProductApi.Controllers
 
                 return Ok(new Product { Id=id,Name=product.name, Price=product.Price});
         }
+        [HttpDelete]
+        public ActionResult<object> Delete(Guid id) {
+            string sql = $"DELETE FROM `products` WHERE Id= `{id}`";
+            conn.Connection.Open();
+            MySqlCommand cmd = new MySqlCommand(sql, conn.Connection);
+            cmd.ExecuteNonQuery();
+            conn.Connection.Close();
+
+            return Ok(new { message = "Sikeres törlés " });
+        }
     }
 }
